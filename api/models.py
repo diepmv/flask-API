@@ -3,7 +3,7 @@ from marshmallow import validate
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 
-db = SQLAlchemy
+db = SQLAlchemy()
 ma = Marshmallow()
 
 class AddUpdateDelete():
@@ -18,12 +18,15 @@ class AddUpdateDelete():
     db.session.delete(resource)
     return db.session.commit()
 
+
+
 class Message(db.Model, AddUpdateDelete):
+
   id = db.Column(db.Integer, primary_key=True)
   message = db.Column(db.String(250), unique=True, nullable=False)
   duration = db.Column(db.Integer, nullable=False)
   creation_date = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp(), nullable=False)
-  category_id = db.Column(db.Integer, db.ForeignKey('category.id', ondelete='CASCADE', nullable=False))
+  category_id = db.Column(db.Integer, db.ForeignKey('category.id', ondelete='CASCADE'), nullable=False)
   category = db.relationship('Category', backref=db.backref('messages', lazy='dynamic', order_by='Message.message'))
   printed_times = db.Column(db.Integer, nullable=False, server_default='0')
   printed_once = db.Column(db.Boolean, nullable=False, server_default='False')

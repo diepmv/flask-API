@@ -78,7 +78,7 @@ class MessageListResource(Resource):
         db.session.add(category)
       #Now that we are sure we have a category
       #create a new message
-      message = Message(message = request_dict['message'], duration = request_dict['duration'], category=request_dict['category'])\
+      message = Message(message = request_dict['message'], duration = request_dict['duration'], category=request_dict['category'])
       query = Message.query.get(message.id)
       result = message_schema.dump(query).data
       return result, status.HTTP_201_CREATED
@@ -159,7 +159,7 @@ class CategoryListResource(Resource):
 api.add_resource(CategoryListResource, '/categories/')
 api.add_resource(CategoryResource, '/categories/<int:id>')
 api.add_resource(MessageListResource, '/messages/')
-api.add_resource(MessageResource, '/messages/<int: id>')
+api.add_resource(MessageResource, '/messages/<int:id>')
 
 
 
