@@ -151,7 +151,7 @@ class CategoryListResource(Resource):
       return result, status.HTTP_201_CREATED
     except SQLAlchemyError as e:
       db.session.rollback()
-      resp = jsonify({"error": str(e)})
+      resp = {"error": str(e)}
       return resp, status.HTTP_400_BAD_REQUEST
 
 
