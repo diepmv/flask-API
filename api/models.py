@@ -63,7 +63,7 @@ class MessageSchema(ma.Schema):
 
   @pre_load
   def process_category(self, data):
-    category = date.get('category')
+    category = data.get('category')
     if category:
       if isinstance(category, dict):
         category_name = category.get('name')

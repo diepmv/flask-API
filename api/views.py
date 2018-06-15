@@ -72,19 +72,25 @@ class MessageListResource(Resource):
     try:
       category_name = request_dict['category']['name']
       category = Category.query.filter_by(name=category_name).first()
+
+      #If category doest not exist, create new one
       if category is None:
         #create a new category
         category = Category(name=category_name)
         db.session.add(category)
       #Now that we are sure we have a category
       #create a new message
-      message = Message(message = request_dict['message'], duration = request_dict['duration'], category=request_dict['category'])
+
+      message = Message(message = request_dict['message'],
+                        duration = request_dict['duration'],
+                        category=category)
+      message.add(message)
       query = Message.query.get(message.id)
       result = message_schema.dump(query).data
       return result, status.HTTP_201_CREATED
-    except SQLALchemyError as e:
+    except SQLAlchemyError as e:
       db.session.rollback()
-      resp = jsonify({"error": str(e)})
+      resp = {"error": str(e)}
       return resp, status.HTTP_400_BAD_REQUEST
 
 
