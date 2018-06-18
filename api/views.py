@@ -131,7 +131,7 @@ class CategoryResource(Resource):
       return response, status.HTTP_204_NO_CONTENT
     except SQLAlchemyError as e:
       db.session.rollback()
-      resp = jsonify({"erorr": str(e)})
+      resp = {"error": str(e)}
       return resp, status.HTTP_401_UNAUTHORIZED
 
 
