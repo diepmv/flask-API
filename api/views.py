@@ -113,9 +113,16 @@ class CategoryResource(Resource):
       return errors, status.HTTP_400_BAD_REQUEST
     try:
       if 'name' in category_dict:
-        category.name = category_dict['name']
-      category.update()
+        category_name = category_dict['name']
+      if Category.is_unique(id=id, name=category_name):
+        category.name = category_name
+      else:
+        response = {'error': 'A category with the same name already exists'}
+        return response, status.HTTP_400_BAD_REQUEST
+
+      category.update()      
       return self.get(id)
+
     except SQLAlachemyError as e:
       db.session.rollback()
       resp = jsonify({'error': str(e)})

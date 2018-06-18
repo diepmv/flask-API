@@ -36,6 +36,17 @@ class Message(db.Model, AddUpdateDelete):
     self.duration = duration
     self.category = category
 
+  @classmethod
+  def is_unique(cls, id, message):
+    existing_message = cls.query.filter_by(message=message).first()
+    if existing_message is None:
+      return True
+    else:
+      if existing_message.id == id:
+        return True
+      else:
+        return False
+
 class Category(db.Model, AddUpdateDelete):
   id = db.Column(db.Integer, primary_key=True)
   name = db.Column(db.String(150), unique=True, nullable=False)
