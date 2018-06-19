@@ -97,7 +97,7 @@ class User(db.Model, AddUpdateDelete):
 
   def __init__(self, name):
     self.name = name
-    
+
 class CategorySchema(ma.Schema):
   id = fields.Integer(dump_only=True)
   name = fields.String(required =True, validate = validate.Length(3))
@@ -130,3 +130,7 @@ class MessageSchema(ma.Schema):
     return data
 
 
+class UserSchema(ma.Schema):
+  id = fields.Integer(dump_only=True)
+  name = fierlds.String(required=True, validate=validate.Length(3))
+  url = ma.URLFor('api.userresource', id=<id>, _external=True)
