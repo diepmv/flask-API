@@ -194,6 +194,12 @@ class CategoryListResource(AuthRequiredResource):
       resp = {"error": str(e)}
       return resp, status.HTTP_400_BAD_REQUEST
 
+class UserResource(AuthRequiredResource):
+  def get(self, id):
+    user = User.query.get_or_404(id)
+    result = user_schema.dump(user).data
+    return result
+
 
 
 api.add_resource(CategoryListResource, '/categories/')
