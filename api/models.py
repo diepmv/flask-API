@@ -132,5 +132,5 @@ class MessageSchema(ma.Schema):
 
 class UserSchema(ma.Schema):
   id = fields.Integer(dump_only=True)
-  name = fierlds.String(required=True, validate=validate.Length(3))
-  url = ma.URLFor('api.userresource', id=<id>, _external=True)
+  name = fields.String(required=True, validate=validate.Length(3))
+  url = ma.URLFor('api.userresource', id='<id>', _external=True)
