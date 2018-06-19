@@ -11,7 +11,7 @@ class PaginationHelper():
 		self.results_per_page = current_app.config['PAGINATION_PAGE_SIZE']
 		self.page_argument_name = current_app.config['PAGINATION_PAGE_ARGUMENT_NAME']
 
-	def pagination_query(self):
+	def paginate_query(self):
 		#if no page number is specified=> page 1 default
 		page_number = self.request.args.get(self.page_argument_name, 1, type=int)
 		paginated_objects = self.query.paginate(page_number, per_page=self.results_per_page, error_out=False)
