@@ -10,6 +10,9 @@ from helpers import PaginationHelper
 
 auth = HTTPBasicAuth()
 
+
+# Makes this function become the callback that Flask-HTTPAuth will
+# use to verify the password for a specific user.
 @auth.verify_password
 def verify_user_password(name, password):
   user = User.query.filter_by(name=name).first()
