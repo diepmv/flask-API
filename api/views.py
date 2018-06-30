@@ -3,18 +3,29 @@ from flask_restful import Api, Resource
 from models import db, Category, CategorySchema, Message, MessageSchema
 from sqlalchemy.exc import SQLAlchemyError
 import status
-from flask_httpauth import HTTPBasicAuth
+from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth, MultiAuth
 from flask import g # This is proxy object share for one request only
 from models import User, UserSchema
 from helpers import PaginationHelper
 
-auth = HTTPBasicAuth()
+basic_auth = HTTPBasicAuth()
+token_auth = HTTPTokenAuth(scheme='Token')
+auth = MultiAuth(token_auth, basic_auth)
 
-@auth.verify_password
-def verify_user_password(name, password):
-  user = User.query.filter_by(name=name).first()
+
+@basic_auth.verify_password
+@token_auth.verify_token
+def verify_user_password(email_or_token, password):
+  g.user = None
+
+  if password == '':
+    user = User.verify_auth_token(email_or_token)
+  else:
+    user = User.query.filter_by(name=email_or_token).first()
+ 
   if not user or not user.verify_password(password):
     return False
+
   g.user = user
   return True
 
@@ -28,7 +39,7 @@ def verify_user_password(name, password):
 
 
 # Error handler
-@auth.error_handler
+@basic_auth.error_handler
 def auth_error():
   return 'Invalid credentials'
 
@@ -264,6 +275,17 @@ class UserListResource(Resource):
 
       return resp, status.HTTP_400_BAD_REQUEST
 
+class Token(AuthRequiredResource):
+  def get(self):
+    if not g.user:
+      resp = {'error': 'Invalid credentials'}
+      return resp, status.HTTP_401_UNAUTHORIZED
+    else:
+
+      token = g.user.generate_auth_token(expiration=3600).decode()
+      print(token)
+      resp = {"token": token, 'expiration': 3600}
+      return resp
 
 api.add_resource(CategoryListResource, '/categories/')
 api.add_resource(CategoryResource, '/categories/<int:id>')
@@ -271,6 +293,7 @@ api.add_resource(MessageListResource, '/messages/')
 api.add_resource(MessageResource, '/messages/<int:id>')
 api.add_resource(UserListResource, '/users/')
 api.add_resource(UserResource, '/users/<int:id>')
+api.add_resource(Token, '/token')
 
 
 
