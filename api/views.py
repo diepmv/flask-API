@@ -21,6 +21,17 @@ def verify_user_password(name, password):
 # Equivalence
 # verify_user_password = auth.verify_password(verify_user_password)
 
+
+# @auth.get_password
+# def get_password(username):
+#   return 'Maivandiep@123#'
+
+
+# Error handler
+@auth.error_handler
+def auth_error():
+  return 'Invalid credentials'
+
 class AuthRequiredResource(Resource):
   # all methods declared in a resource that use this class will have the auth.login_required apply to them
   method_decorators = [auth.login_required]
@@ -33,6 +44,7 @@ category_schema = CategorySchema()
 message_schema = MessageSchema()
 user_schema = UserSchema()
 api = Api(api_bp)
+
 
 class MessageResource(AuthRequiredResource):
   def get(self, id):

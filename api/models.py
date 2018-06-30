@@ -4,6 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from passlib.apps import custom_app_context as password_context
 import re
+from flask import current_app
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 db = SQLAlchemy()
 ma = Marshmallow()
@@ -78,6 +80,15 @@ class User(db.Model, AddUpdateDelete):
   def verify_password(self, password):
     return password_context.verify(password, self.hashed_password)
 
+  @staticmethod
+  def vefify_auth_token(token):
+    s =Serializer(current_app.config['SECRET_KEY'])
+    try:
+      data = s.loads(token)
+    except:
+      return None
+    return User.query.get(data['id'])
+
 
   def check_password_strength_and_hash_if_ok(self, password):
     if len(password) < 8:
@@ -94,6 +105,11 @@ class User(db.Model, AddUpdateDelete):
       return 'The password must include at least one symbol', False
     self.hashed_password = password_context.encrypt(password)
     return '', True
+
+
+  def generate_auth_token(self, expiration):
+    s =Serializer(current_app.config['SECRET_KEY'],expires_in=expiration)
+    return s.dumps({'id': self.id})
 
   def __init__(self, name):
     self.name = name
